@@ -59,7 +59,10 @@ Press `F12` in your browser to open Developer Tools:
 ```html
 <!-- In index.html <head> section -->
 <title>Your Title Here</title>
-<meta name="description" content="Your description" />
+<meta
+	name="description"
+	content="Your description"
+/>
 ```
 
 **Section Headers**
@@ -95,10 +98,16 @@ Images use Unsplash URLs. To change:
 
 ```html
 <!-- Old -->
-<img src="https://images.unsplash.com/photo-1..." alt="Description" />
+<img
+	src="https://images.unsplash.com/photo-1..."
+	alt="Description"
+/>
 
 <!-- New - Use your own Unsplash URL -->
-<img src="https://images.unsplash.com/photo-YOUR-ID..." alt="Description" />
+<img
+	src="https://images.unsplash.com/photo-YOUR-ID..."
+	alt="Description"
+/>
 ```
 
 Get free images from [Unsplash.com](https://unsplash.com)
@@ -210,8 +219,12 @@ In `index.html`, search for `class="hero-title"`:
 
 ```html
 <h1 class="hero-title">
-  <span class="title-line">Your Headline Here</span>
-  <span class="title-line gradient-text">Your Tagline</span>
+	<span class="title-line"
+		>Your Headline Here</span
+	>
+	<span class="title-line gradient-text"
+		>Your Tagline</span
+	>
 </h1>
 ```
 
@@ -330,6 +343,14 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - External favicon support
 - Comprehensive documentation
 
+### Recent Updates (v1.0.1)
+
+- **Social Icons Refresh**: Updated X (formerly Twitter) and Instagram logos to modern, recognizable designs
+  - X icon: New official X branding design
+  - Instagram icon: Improved camera lens representation
+- **Footer Social Links**: Enhanced social media section in footer with better icon quality
+- **Modern Design Standards**: All social icons now follow current platform branding guidelines
+
 ## 👥 Credits
 
 - **Design & Development**: SkillSwap Hub Team
@@ -341,6 +362,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 **Built with ❤️ for the SkillSwap Community**
 
-**Last Updated**: November 2025
+**Last Updated**: November 21, 2025
 
 **Questions?** Check out the detailed [INSTRUCTIONS.html](INSTRUCTIONS.html) for comprehensive modification instructions, or review the code comments throughout the project.
