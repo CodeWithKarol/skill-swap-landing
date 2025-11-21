@@ -1,424 +1,311 @@
 // SkillSwap Hub Landing Page Script
 
-document.addEventListener(
-	"DOMContentLoaded",
-	function () {
-		// Flag to prevent scroll events during menu operations
-		let isMenuClosing = false;
+document.addEventListener("DOMContentLoaded", function () {
+  // State management for menu and scroll
+  let menuState = {
+    isOpen: false,
+    isAnimating: false,
+    scrollPosition: 0,
+  };
+  const signupForm = document.querySelector(".signup-form");
+  if (signupForm) {
+    signupForm.addEventListener("submit", function (e) {
+      e.preventDefault();
+      const email = this.querySelector('input[type="email"]').value;
+      const learnSkill = this.querySelectorAll("select")[0].value;
+      const teachSkill = this.querySelectorAll("select")[1].value;
 
-		// Sign-up form handling
-		const signupForm = document.querySelector(
-			".signup-form"
-		);
-		if (signupForm) {
-			signupForm.addEventListener(
-				"submit",
-				function (e) {
-					e.preventDefault();
-					const email = this.querySelector(
-						'input[type="email"]'
-					).value;
-					const learnSkill =
-						this.querySelectorAll("select")[0]
-							.value;
-					const teachSkill =
-						this.querySelectorAll("select")[1]
-							.value;
+      if (
+        email &&
+        learnSkill &&
+        teachSkill &&
+        learnSkill !== "Skills to Learn" &&
+        teachSkill !== "Skills to Teach"
+      ) {
+        alert(
+          `Thank you for signing up, ${email}! We'll match you with users interested in: ${learnSkill} and looking to learn: ${teachSkill}.`
+        );
+        this.reset();
+      } else {
+        alert("Please fill in all fields and select skills.");
+      }
+    });
+  }
 
-					if (
-						email &&
-						learnSkill &&
-						teachSkill &&
-						learnSkill !== "Skills to Learn" &&
-						teachSkill !== "Skills to Teach"
-					) {
-						alert(
-							`Thank you for signing up, ${email}! We'll match you with users interested in: ${learnSkill} and looking to learn: ${teachSkill}.`
-						);
-						this.reset();
-					} else {
-						alert(
-							"Please fill in all fields and select skills."
-						);
-					}
-				}
-			);
-		}
+  // Smooth scrolling for nav links
+  const navLinks = document.querySelectorAll("nav a");
+  navLinks.forEach((link) => {
+    link.addEventListener("click", function (e) {
+      const href = this.getAttribute("href");
+      // Only prevent default for anchor links
+      if (href && href.startsWith("#")) {
+        e.preventDefault();
+        const targetSection = document.querySelector(href);
+        if (targetSection) {
+          menuState.isAnimating = true;
+          targetSection.scrollIntoView({
+            behavior: "smooth",
+          });
+          // Close mobile menu after navigation
+          const navUl = document.querySelector("nav ul");
+          if (navUl) {
+            navUl.classList.remove("active");
+            const mobileMenuBtn = document.querySelector(".mobile-menu-btn");
+            if (mobileMenuBtn) {
+              mobileMenuBtn.textContent = "☰";
+            }
+          }
+          // Close modern mobile menu
+          if (mobileNavOverlay && mobileMenuToggle) {
+            mobileMenuToggle.classList.remove("active");
+            mobileNavOverlay.classList.remove("active");
+            document.body.style.overflow = "";
+            document.documentElement.style.overflow = "";
+            menuState.isOpen = false;
+          }
+          // Reset flag after smooth scroll completes
+          setTimeout(() => {
+            menuState.isAnimating = false;
+          }, 800);
+        }
+      }
+    });
+  });
 
-		// Smooth scrolling for nav links
-		const navLinks =
-			document.querySelectorAll("nav a");
-		navLinks.forEach((link) => {
-			link.addEventListener(
-				"click",
-				function (e) {
-					const href = this.getAttribute("href");
-					// Only prevent default for anchor links
-					if (href && href.startsWith("#")) {
-						e.preventDefault();
-						const targetSection =
-							document.querySelector(href);
-						if (targetSection) {
-							// Set flag to prevent scroll events during smooth scroll
-							isMenuClosing = true;
-							targetSection.scrollIntoView({
-								behavior: "smooth",
-							});
-							// Close mobile menu after navigation
-							const navUl =
-								document.querySelector("nav ul");
-							if (navUl) {
-								navUl.classList.remove("active");
-								const mobileMenuBtn =
-									document.querySelector(
-										".mobile-menu-btn"
-									);
-								if (mobileMenuBtn) {
-									mobileMenuBtn.textContent = "☰";
-								}
-							}
-							// Close modern mobile menu
-							const mobileNavOverlay =
-								document.querySelector(
-									".mobile-nav-overlay"
-								);
-							const mobileMenuToggle =
-								document.querySelector(
-									".mobile-menu-toggle"
-								);
-							if (
-								mobileNavOverlay &&
-								mobileMenuToggle
-							) {
-								mobileMenuToggle.classList.remove(
-									"active"
-								);
-								mobileNavOverlay.classList.remove(
-									"active"
-								);
-								document.body.style.overflow = "";
-								document.documentElement.style.overflow =
-									"";
-							}
-							// Reset flag after smooth scroll completes
-							setTimeout(() => {
-								isMenuClosing = false;
-							}, 800);
-						}
-					}
-				}
-			);
-		});
+  // Logo click scrolls to top
+  const logoSection = document.querySelector(".logo-section");
+  if (logoSection) {
+    logoSection.addEventListener("click", function (e) {
+      e.preventDefault();
+      menuState.isAnimating = true;
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
+      // Close mobile menu if open
+      if (menuState.isOpen) {
+        if (mobileMenuToggle) {
+          mobileMenuToggle.classList.remove("active");
+        }
+        if (mobileNavOverlay) {
+          mobileNavOverlay.classList.remove("active");
+        }
+        document.body.style.overflow = "";
+        document.documentElement.style.overflow = "";
+        menuState.isOpen = false;
+      }
+      // Reset flag after scroll completes
+      setTimeout(() => {
+        menuState.isAnimating = false;
+      }, 800);
+    });
+  }
 
-		// Modern Mobile menu toggle with responsive handling
-		const mobileMenuToggle =
-			document.querySelector(
-				".mobile-menu-toggle"
-			);
-		const mobileNavOverlay =
-			document.querySelector(
-				".mobile-nav-overlay"
-			);
+  // Modern Mobile menu toggle with responsive handling
+  const mobileMenuToggle = document.querySelector(".mobile-menu-toggle");
+  const mobileNavOverlay = document.querySelector(".mobile-nav-overlay");
 
-		// Function to close mobile menu
-		const closeMobileMenu = () => {
-			isMenuClosing = true;
-			if (mobileMenuToggle) {
-				mobileMenuToggle.classList.remove(
-					"active"
-				);
-			}
-			if (mobileNavOverlay) {
-				mobileNavOverlay.classList.remove(
-					"active"
-				);
-			}
-			document.body.style.overflow = "";
-			document.documentElement.style.overflow =
-				"";
-			// Reset flag after brief delay
-			setTimeout(() => {
-				isMenuClosing = false;
-			}, 150);
-		};
+  // Function to close mobile menu
+  const closeMobileMenu = () => {
+    if (!menuState.isOpen || menuState.isAnimating) return;
 
-		// Function to open mobile menu
-		const openMobileMenu = () => {
-			if (mobileMenuToggle) {
-				mobileMenuToggle.classList.add("active");
-			}
-			if (mobileNavOverlay) {
-				mobileNavOverlay.classList.add("active");
-			}
-			document.body.style.overflow = "hidden";
-			document.documentElement.style.overflow =
-				"hidden";
-		};
+    menuState.isAnimating = true;
+    menuState.isOpen = false;
 
-		if (mobileMenuToggle && mobileNavOverlay) {
-			// Toggle mobile menu
-			mobileMenuToggle.addEventListener(
-				"click",
-				function (e) {
-					e.stopPropagation();
-					if (
-						mobileNavOverlay.classList.contains(
-							"active"
-						)
-					) {
-						closeMobileMenu();
-					} else {
-						openMobileMenu();
-					}
-				}
-			);
+    if (mobileMenuToggle) {
+      mobileMenuToggle.classList.remove("active");
+    }
+    if (mobileNavOverlay) {
+      mobileNavOverlay.classList.remove("active");
+    }
 
-			// Close mobile menu when clicking overlay
-			mobileNavOverlay.addEventListener(
-				"click",
-				function (e) {
-					if (e.target === mobileNavOverlay) {
-						closeMobileMenu();
-					}
-				}
-			);
+    // Restore scroll after animation completes
+    setTimeout(() => {
+      document.body.style.overflow = "";
+      document.documentElement.style.overflow = "";
+      window.scrollTo(0, menuState.scrollPosition);
+      menuState.isAnimating = false;
+    }, 300);
+  };
 
-			// Close mobile menu when clicking nav links
-			const mobileNavLinks =
-				document.querySelectorAll(
-					".mobile-nav-link"
-				);
-			mobileNavLinks.forEach((link) => {
-				link.addEventListener(
-					"click",
-					function (e) {
-						// Allow default behavior for smooth scroll handling
-						const href =
-							this.getAttribute("href");
-						if (href && href.startsWith("#")) {
-							// Prevent scroll event from firing during smooth scroll
-							isMenuClosing = true;
-							// Don't call closeMobileMenu with its own timeout - reset flag after smooth scroll completes
-							if (mobileMenuToggle) {
-								mobileMenuToggle.classList.remove(
-									"active"
-								);
-							}
-							if (mobileNavOverlay) {
-								mobileNavOverlay.classList.remove(
-									"active"
-								);
-							}
-							document.body.style.overflow = "";
-							document.documentElement.style.overflow =
-								"";
-							// Reset flag after smooth scroll animation completes
-							setTimeout(() => {
-								isMenuClosing = false;
-							}, 800);
-						} else {
-							closeMobileMenu();
-						}
-					}
-				);
-			});
+  // Function to open mobile menu
+  const openMobileMenu = () => {
+    if (menuState.isOpen || menuState.isAnimating) return;
 
-			// Close mobile menu when clicking action buttons
-			const mobileNavButtons =
-				document.querySelectorAll(
-					".btn-mobile-nav"
-				);
-			mobileNavButtons.forEach((button) => {
-				button.addEventListener(
-					"click",
-					function () {
-						closeMobileMenu();
-					}
-				);
-			});
+    menuState.isAnimating = true;
+    menuState.isOpen = true;
+    menuState.scrollPosition = window.pageYOffset;
 
-			// Close on escape key
-			document.addEventListener(
-				"keydown",
-				function (e) {
-					if (
-						e.key === "Escape" &&
-						mobileNavOverlay.classList.contains(
-							"active"
-						)
-					) {
-						closeMobileMenu();
-					}
-				}
-			);
-		}
+    if (mobileMenuToggle) {
+      mobileMenuToggle.classList.add("active");
+    }
+    if (mobileNavOverlay) {
+      mobileNavOverlay.classList.add("active");
+    }
 
-		// Close mobile menu on window resize to desktop
-		let resizeTimer;
-		window.addEventListener(
-			"resize",
-			function () {
-				clearTimeout(resizeTimer);
-				resizeTimer = setTimeout(function () {
-					if (window.innerWidth > 767) {
-						closeMobileMenu();
-					}
-				}, 250);
-			}
-		);
+    // Disable scroll immediately
+    document.body.style.overflow = "hidden";
+    document.documentElement.style.overflow = "hidden";
 
-		// Handle orientation change
-		window.addEventListener(
-			"orientationchange",
-			function () {
-				setTimeout(function () {
-					if (window.innerWidth > 767) {
-						closeMobileMenu();
-					}
-				}, 200);
-			}
-		);
+    menuState.isAnimating = false;
+  };
 
-		// Add scroll effect to header
-		const mainHeader = document.querySelector(
-			".main-header"
-		);
-		let lastScroll = 0;
-		let ticking = false;
+  if (mobileMenuToggle && mobileNavOverlay) {
+    // Toggle mobile menu
+    mobileMenuToggle.addEventListener("click", function (e) {
+      e.stopPropagation();
+      if (mobileNavOverlay.classList.contains("active")) {
+        closeMobileMenu();
+      } else {
+        openMobileMenu();
+      }
+    });
 
-		const updateHeaderOnScroll = () => {
-			const currentScroll = window.pageYOffset;
+    // Close mobile menu when clicking overlay
+    mobileNavOverlay.addEventListener("click", function (e) {
+      if (e.target === mobileNavOverlay) {
+        closeMobileMenu();
+      }
+    });
 
-			if (currentScroll > 50) {
-				mainHeader.classList.add("scrolled");
-			} else {
-				mainHeader.classList.remove("scrolled");
-			}
+    // Close mobile menu when clicking nav links
+    const mobileNavLinks = document.querySelectorAll(".mobile-nav-link");
+    mobileNavLinks.forEach((link) => {
+      link.addEventListener("click", function (e) {
+        const href = this.getAttribute("href");
+        if (href && href.startsWith("#")) {
+          menuState.isAnimating = true;
+          if (mobileMenuToggle) {
+            mobileMenuToggle.classList.remove("active");
+          }
+          if (mobileNavOverlay) {
+            mobileNavOverlay.classList.remove("active");
+          }
+          document.body.style.overflow = "";
+          document.documentElement.style.overflow = "";
+          menuState.isOpen = false;
+          // Reset flag after smooth scroll animation completes
+          setTimeout(() => {
+            menuState.isAnimating = false;
+          }, 800);
+        } else {
+          closeMobileMenu();
+        }
+      });
+    });
 
-			lastScroll = currentScroll;
-			ticking = false;
-		};
+    // Close mobile menu when clicking action buttons
+    const mobileNavButtons = document.querySelectorAll(".btn-mobile-nav");
+    mobileNavButtons.forEach((button) => {
+      button.addEventListener("click", function () {
+        closeMobileMenu();
+      });
+    });
 
-		window.addEventListener(
-			"scroll",
-			function () {
-				// Skip scroll handler if menu is currently closing
-				if (isMenuClosing) {
-					return;
-				}
-				if (!ticking) {
-					window.requestAnimationFrame(
-						updateHeaderOnScroll
-					);
-					ticking = true;
-				}
-			}
-		);
+    // Close on escape key
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && mobileNavOverlay.classList.contains("active")) {
+        closeMobileMenu();
+      }
+    });
+  }
 
-		// Prevent body scroll when mobile menu is open (iOS fix)
-		let scrollPosition = 0;
-		const preventBodyScroll = (enable) => {
-			if (enable) {
-				scrollPosition = window.pageYOffset;
-				document.body.style.position = "fixed";
-				document.body.style.top = `-${scrollPosition}px`;
-				document.body.style.width = "100%";
-			} else {
-				document.body.style.position = "";
-				document.body.style.top = "";
-				document.body.style.width = "";
-				window.scrollTo(0, scrollPosition);
-			}
-		};
+  // Close mobile menu on window resize to desktop
+  let resizeTimer;
+  window.addEventListener("resize", function () {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(function () {
+      if (window.innerWidth > 767) {
+        closeMobileMenu();
+      }
+    }, 250);
+  });
 
-		// Update mobile menu functions to use preventBodyScroll
-		if (mobileNavOverlay) {
-			const observer = new MutationObserver(
-				(mutations) => {
-					mutations.forEach((mutation) => {
-						if (
-							mutation.attributeName === "class"
-						) {
-							const isActive =
-								mobileNavOverlay.classList.contains(
-									"active"
-								);
-							if (window.innerWidth <= 767) {
-								preventBodyScroll(isActive);
-							}
-						}
-					});
-				}
-			);
+  // Handle orientation change
+  window.addEventListener("orientationchange", function () {
+    setTimeout(function () {
+      if (window.innerWidth > 767) {
+        closeMobileMenu();
+      }
+    }, 200);
+  });
 
-			observer.observe(mobileNavOverlay, {
-				attributes: true,
-			});
-		}
+  // Add scroll effect to header
+  const mainHeader = document.querySelector(".main-header");
+  let lastScroll = 0;
+  let ticking = false;
 
-		// Placeholder for chat integration - in a real app, integrate with a chat service
-		console.log(
-			"Chat integration placeholder: Implement real-time chat for mobile users."
-		);
+  const updateHeaderOnScroll = () => {
+    const currentScroll = window.pageYOffset;
 
-		// Placeholder for event RSVP - in a real app, handle RSVP logic
-		const eventButtons =
-			document.querySelectorAll(
-				".event-calendar button"
-			);
-		eventButtons.forEach((button) => {
-			button.addEventListener(
-				"click",
-				function () {
-					alert(
-						"Event calendar integration: Redirect to full calendar view."
-					);
-				}
-			);
-		});
+    if (currentScroll > 50) {
+      mainHeader.classList.add("scrolled");
+    } else {
+      mainHeader.classList.remove("scrolled");
+    }
 
-		// Placeholder for profile management - in a real app, link to user profiles
-		console.log(
-			"Profile management placeholder: Easy profile management for mobile users."
-		);
+    lastScroll = currentScroll;
+    ticking = false;
+  };
 
-		// Viewport animations with enhanced effects
-		const animateOnScroll = () => {
-			const elements = document.querySelectorAll(
-				".animate-on-scroll"
-			);
+  window.addEventListener("scroll", function () {
+    // Skip scroll updates while menu is animating
+    if (menuState.isAnimating) {
+      return;
+    }
+    if (!ticking) {
+      window.requestAnimationFrame(updateHeaderOnScroll);
+      ticking = true;
+    }
+  });
 
-			const observer = new IntersectionObserver(
-				(entries) => {
-					entries.forEach((entry, index) => {
-						if (entry.isIntersecting) {
-							// Calculate staggered delay based on element position
-							const staggerDelay = index * 80;
-							setTimeout(() => {
-								entry.target.classList.add(
-									"animate"
-								);
-							}, staggerDelay);
-						}
-					});
-				},
-				{
-					threshold: 0.1,
-					rootMargin: "0px 0px -80px 0px",
-				}
-			);
+  // Placeholder for chat integration - in a real app, integrate with a chat service
+  console.log(
+    "Chat integration placeholder: Implement real-time chat for mobile users."
+  );
 
-			elements.forEach((element, index) => {
-				// Set CSS variable for nth-child calculations
-				element.style.setProperty(
-					"--index",
-					index + 1
-				);
-				observer.observe(element);
-			});
-		};
+  // Placeholder for event RSVP - in a real app, handle RSVP logic
+  const eventButtons = document.querySelectorAll(".event-calendar button");
+  eventButtons.forEach((button) => {
+    button.addEventListener("click", function () {
+      alert("Event calendar integration: Redirect to full calendar view.");
+    });
+  });
 
-		// Initialize animations
-		animateOnScroll();
-	}
-);
+  // Placeholder for profile management - in a real app, link to user profiles
+  console.log(
+    "Profile management placeholder: Easy profile management for mobile users."
+  );
+
+  // Viewport animations with enhanced effects
+  const animateOnScroll = () => {
+    const elements = document.querySelectorAll(".animate-on-scroll");
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry, index) => {
+          if (entry.isIntersecting) {
+            // Calculate staggered delay based on element position
+            const staggerDelay = index * 80;
+            setTimeout(() => {
+              entry.target.classList.add("animate");
+            }, staggerDelay);
+          }
+        });
+      },
+      {
+        threshold: 0.1,
+        rootMargin: "0px 0px -80px 0px",
+      }
+    );
+
+    elements.forEach((element, index) => {
+      // Set CSS variable for nth-child calculations
+      element.style.setProperty("--index", index + 1);
+      observer.observe(element);
+    });
+  };
+
+  // Initialize animations
+  animateOnScroll();
+});
