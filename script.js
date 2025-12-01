@@ -167,125 +167,87 @@ document.addEventListener(
 		const watchDemoBtn = document.querySelector(
 			".btn-hero-secondary"
 		);
-		if (watchDemoBtn) {
+		const demoModal = document.querySelector(
+			"#demo-modal"
+		);
+		const demoVideo = document.querySelector(
+			"#demo-video"
+		);
+		const modalCloseBtn = document.querySelector(
+			".modal-close"
+		);
+
+		if (watchDemoBtn && demoModal) {
+			const openModal = () => {
+				demoModal.classList.add("active");
+				demoModal.setAttribute(
+					"aria-hidden",
+					"false"
+				);
+				document.body.style.overflow = "hidden"; // Prevent background scrolling
+				if (demoVideo) {
+					demoVideo
+						.play()
+						.catch((e) => {
+							// Autoplay prevented
+						});
+				}
+				// Move focus to close button
+				if (modalCloseBtn) {
+					setTimeout(() => {
+						modalCloseBtn.focus();
+					}, 100);
+				}
+			};
+
+			const closeModal = () => {
+				// Return focus to trigger button before hiding modal
+				watchDemoBtn.focus();
+
+				demoModal.classList.remove("active");
+				demoModal.setAttribute(
+					"aria-hidden",
+					"true"
+				);
+				document.body.style.overflow = "";
+				if (demoVideo) {
+					demoVideo.pause();
+					demoVideo.currentTime = 0;
+				}
+			};
+
 			watchDemoBtn.addEventListener(
 				"click",
-				function () {
-					// Create modal elements
-					const modalOverlay =
-						document.createElement("div");
-					modalOverlay.style.position = "fixed";
-					modalOverlay.style.top = "0";
-					modalOverlay.style.left = "0";
-					modalOverlay.style.width = "100%";
-					modalOverlay.style.height = "100%";
-					modalOverlay.style.backgroundColor =
-						"rgba(0, 0, 0, 0.8)";
-					modalOverlay.style.display = "flex";
-					modalOverlay.style.justifyContent =
-						"center";
-					modalOverlay.style.alignItems =
-						"center";
-					modalOverlay.style.zIndex = "10000";
-					modalOverlay.style.opacity = "0";
-					modalOverlay.style.transition =
-						"opacity 0.3s ease";
+				(e) => {
+					e.preventDefault();
+					openModal();
+				}
+			);
 
-					const modalContent =
-						document.createElement("div");
-					modalContent.style.backgroundColor =
-						"#fff";
-					modalContent.style.padding = "40px";
-					modalContent.style.borderRadius =
-						"12px";
-					modalContent.style.textAlign = "center";
-					modalContent.style.maxWidth = "90%";
-					modalContent.style.width = "500px";
-					modalContent.style.position =
-						"relative";
-					modalContent.style.boxShadow =
-						"0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)";
+			if (modalCloseBtn) {
+				modalCloseBtn.addEventListener(
+					"click",
+					closeModal
+				);
+			}
 
-					const closeBtn =
-						document.createElement("button");
-					closeBtn.innerHTML = "&times;";
-					closeBtn.style.position = "absolute";
-					closeBtn.style.top = "10px";
-					closeBtn.style.right = "15px";
-					closeBtn.style.border = "none";
-					closeBtn.style.background = "none";
-					closeBtn.style.fontSize = "24px";
-					closeBtn.style.cursor = "pointer";
-					closeBtn.style.color = "#666";
+			// Close on backdrop click
+			demoModal.addEventListener("click", (e) => {
+				if (e.target === demoModal) {
+					closeModal();
+				}
+			});
 
-					const videoPlaceholder =
-						document.createElement("div");
-					videoPlaceholder.style.width = "100%";
-					videoPlaceholder.style.height = "250px";
-					videoPlaceholder.style.backgroundColor =
-						"#000";
-					videoPlaceholder.style.borderRadius =
-						"8px";
-					videoPlaceholder.style.marginBottom =
-						"20px";
-					videoPlaceholder.style.display = "flex";
-					videoPlaceholder.style.justifyContent =
-						"center";
-					videoPlaceholder.style.alignItems =
-						"center";
-					videoPlaceholder.style.color = "#fff";
-					videoPlaceholder.innerHTML =
-						'<svg viewBox="0 0 24 24" fill="currentColor" style="width: 64px; height: 64px; opacity: 0.8;"><path d="M8 5v14l11-7z" /></svg>';
-
-					const title =
-						document.createElement("h3");
-					title.textContent = "SkillSwap Demo";
-					title.style.marginBottom = "10px";
-					title.style.color = "#333";
-
-					const message =
-						document.createElement("p");
-					message.textContent =
-						"This is a demo video placeholder. In a real application, this would play a product tour video.";
-					message.style.color = "#666";
-					message.style.lineHeight = "1.5";
-
-					// Assemble modal
-					modalContent.appendChild(closeBtn);
-					modalContent.appendChild(
-						videoPlaceholder
-					);
-					modalContent.appendChild(title);
-					modalContent.appendChild(message);
-					modalOverlay.appendChild(modalContent);
-					document.body.appendChild(modalOverlay);
-
-					// Animate in
-					requestAnimationFrame(() => {
-						modalOverlay.style.opacity = "1";
-					});
-
-					// Close functionality
-					const closeModal = () => {
-						modalOverlay.style.opacity = "0";
-						setTimeout(() => {
-							document.body.removeChild(
-								modalOverlay
-							);
-						}, 300);
-					};
-
-					closeBtn.addEventListener(
-						"click",
-						closeModal
-					);
-					modalOverlay.addEventListener(
-						"click",
-						(e) => {
-							if (e.target === modalOverlay)
-								closeModal();
-						}
-					);
+			// Close on Escape key
+			document.addEventListener(
+				"keydown",
+				(e) => {
+					if (
+						e.key === "Escape" &&
+						demoModal.classList.contains("active")
+					) {
+						closeModal();
+					}
 				}
 			);
 		}
@@ -522,9 +484,7 @@ document.addEventListener(
 		);
 
 		// Placeholder for chat integration - in a real app, integrate with a chat service
-		console.log(
-			"Chat integration placeholder: Implement real-time chat for mobile users."
-		);
+
 
 		// Placeholder for event RSVP - in a real app, handle RSVP logic
 		const eventButtons =
@@ -543,9 +503,7 @@ document.addEventListener(
 		});
 
 		// Placeholder for profile management - in a real app, link to user profiles
-		console.log(
-			"Profile management placeholder: Easy profile management for mobile users."
-		);
+
 
 		// Viewport animations with enhanced effects
 		const animateOnScroll = () => {
